@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-03-11T03:20:16.872233+00:00
+Generated at: 2026-03-11T03:24:18.898318+00:00
 Project: shop-0310
 Milestone: 4
 """
@@ -55,61 +55,15 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
         "category": "HAPPY_PATH",
         "endpoint": "/orders",
         "method": "POST",
-        "description": "Create a user, category, product with inventory, set inventory quantity, then create an order successfully",
-        "setup": {
-            "steps": [
-                {
-                    "endpoint": "/users",
-                    "method": "POST",
-                    "body": {
-                        "email": "orderuser1@example.com",
-                        "name": "Order Test User"
-                    },
-                    "extract": {
-                        "user_id": "id"
-                    }
-                },
-                {
-                    "endpoint": "/categories",
-                    "method": "POST",
-                    "body": {
-                        "name": "Order Test Category",
-                        "description": "Category for order tests"
-                    },
-                    "extract": {
-                        "category_id": "id"
-                    }
-                },
-                {
-                    "endpoint": "/products",
-                    "method": "POST",
-                    "body": {
-                        "name": "Order Test Product",
-                        "description": "Product for order test",
-                        "price": 29.99,
-                        "category_id": "$category_id"
-                    },
-                    "extract": {
-                        "product_id": "id"
-                    }
-                },
-                {
-                    "endpoint": "/inventory/$product_id",
-                    "method": "PUT",
-                    "body": {
-                        "quantity": 100
-                    }
-                }
-            ]
-        },
+        "description": "Create an order using bootstrapped user and product with sufficient inventory",
         "request_data": {
             "path": {},
             "query": {},
             "body": {
-                "user_id": "$user_id",
+                "user_id": 1,
                 "items": [
                     {
-                        "product_id": "$product_id",
+                        "product_id": 1,
                         "quantity": 2
                     }
                 ]
@@ -143,27 +97,12 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
         "category": "NOT_FOUND",
         "endpoint": "/orders",
         "method": "POST",
-        "description": "Create a user, then attempt to create an order with a non-existent product ID, expect 404",
-        "setup": {
-            "steps": [
-                {
-                    "endpoint": "/users",
-                    "method": "POST",
-                    "body": {
-                        "email": "orderprodnotfound@example.com",
-                        "name": "Product Not Found User"
-                    },
-                    "extract": {
-                        "user_id": "id"
-                    }
-                }
-            ]
-        },
+        "description": "Attempt to create an order with a non-existent product ID using bootstrapped user, expect 404",
         "request_data": {
             "path": {},
             "query": {},
             "body": {
-                "user_id": "$user_id",
+                "user_id": 1,
                 "items": [
                     {
                         "product_id": 999999,
@@ -179,61 +118,15 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
         "category": "INVALID_INPUT",
         "endpoint": "/orders",
         "method": "POST",
-        "description": "Create user, product with limited inventory, then attempt order exceeding available stock, expect 400",
-        "setup": {
-            "steps": [
-                {
-                    "endpoint": "/users",
-                    "method": "POST",
-                    "body": {
-                        "email": "orderinsuff@example.com",
-                        "name": "Insufficient Stock User"
-                    },
-                    "extract": {
-                        "user_id": "id"
-                    }
-                },
-                {
-                    "endpoint": "/categories",
-                    "method": "POST",
-                    "body": {
-                        "name": "Low Stock Category",
-                        "description": "Category for low stock test"
-                    },
-                    "extract": {
-                        "category_id": "id"
-                    }
-                },
-                {
-                    "endpoint": "/products",
-                    "method": "POST",
-                    "body": {
-                        "name": "Low Stock Product",
-                        "description": "Product with low stock",
-                        "price": 15.0,
-                        "category_id": "$category_id"
-                    },
-                    "extract": {
-                        "product_id": "id"
-                    }
-                },
-                {
-                    "endpoint": "/inventory/$product_id",
-                    "method": "PUT",
-                    "body": {
-                        "quantity": 3
-                    }
-                }
-            ]
-        },
+        "description": "Attempt to order more than available stock for bootstrapped low-stock product, expect 400",
         "request_data": {
             "path": {},
             "query": {},
             "body": {
-                "user_id": "$user_id",
+                "user_id": 1,
                 "items": [
                     {
-                        "product_id": "$product_id",
+                        "product_id": 3,
                         "quantity": 10
                     }
                 ]
@@ -259,72 +152,24 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
         "category": "HAPPY_PATH",
         "endpoint": "/orders/{order_id}",
         "method": "GET",
-        "description": "Create a user, product with inventory, create an order, then retrieve it by ID with full details",
+        "description": "Create an order via setup, then retrieve it by ID with full details",
         "setup": {
-            "steps": [
-                {
-                    "endpoint": "/users",
-                    "method": "POST",
-                    "body": {
-                        "email": "getorderuser@example.com",
-                        "name": "Get Order User"
-                    },
-                    "extract": {
-                        "user_id": "id"
+            "endpoint": "/orders",
+            "method": "POST",
+            "body": {
+                "user_id": 1,
+                "items": [
+                    {
+                        "product_id": 2,
+                        "quantity": 1
                     }
-                },
-                {
-                    "endpoint": "/categories",
-                    "method": "POST",
-                    "body": {
-                        "name": "Get Order Category",
-                        "description": "Category for get order test"
-                    },
-                    "extract": {
-                        "category_id": "id"
-                    }
-                },
-                {
-                    "endpoint": "/products",
-                    "method": "POST",
-                    "body": {
-                        "name": "Get Order Product",
-                        "description": "Product for get order test",
-                        "price": 49.99,
-                        "category_id": "$category_id"
-                    },
-                    "extract": {
-                        "product_id": "id"
-                    }
-                },
-                {
-                    "endpoint": "/inventory/$product_id",
-                    "method": "PUT",
-                    "body": {
-                        "quantity": 50
-                    }
-                },
-                {
-                    "endpoint": "/orders",
-                    "method": "POST",
-                    "body": {
-                        "user_id": "$user_id",
-                        "items": [
-                            {
-                                "product_id": "$product_id",
-                                "quantity": 3
-                            }
-                        ]
-                    },
-                    "extract": {
-                        "order_id": "id"
-                    }
-                }
-            ]
+                ]
+            },
+            "extract_id_from": "id"
         },
         "request_data": {
             "path": {
-                "order_id": "$order_id"
+                "order_id": "$setup_id"
             },
             "query": {},
             "body": null
@@ -364,85 +209,19 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
         "category": "HAPPY_PATH",
         "endpoint": "/orders",
         "method": "POST",
-        "description": "Create a user, two products with inventory, then create an order with multiple items",
-        "setup": {
-            "steps": [
-                {
-                    "endpoint": "/users",
-                    "method": "POST",
-                    "body": {
-                        "email": "multiitemuser@example.com",
-                        "name": "Multi Item User"
-                    },
-                    "extract": {
-                        "user_id": "id"
-                    }
-                },
-                {
-                    "endpoint": "/categories",
-                    "method": "POST",
-                    "body": {
-                        "name": "Multi Item Category",
-                        "description": "Category for multi-item order test"
-                    },
-                    "extract": {
-                        "category_id": "id"
-                    }
-                },
-                {
-                    "endpoint": "/products",
-                    "method": "POST",
-                    "body": {
-                        "name": "Multi Item Product A",
-                        "description": "First product",
-                        "price": 10.0,
-                        "category_id": "$category_id"
-                    },
-                    "extract": {
-                        "product_id_a": "id"
-                    }
-                },
-                {
-                    "endpoint": "/products",
-                    "method": "POST",
-                    "body": {
-                        "name": "Multi Item Product B",
-                        "description": "Second product",
-                        "price": 25.5,
-                        "category_id": "$category_id"
-                    },
-                    "extract": {
-                        "product_id_b": "id"
-                    }
-                },
-                {
-                    "endpoint": "/inventory/$product_id_a",
-                    "method": "PUT",
-                    "body": {
-                        "quantity": 20
-                    }
-                },
-                {
-                    "endpoint": "/inventory/$product_id_b",
-                    "method": "PUT",
-                    "body": {
-                        "quantity": 20
-                    }
-                }
-            ]
-        },
+        "description": "Create an order with multiple items using bootstrapped products",
         "request_data": {
             "path": {},
             "query": {},
             "body": {
-                "user_id": "$user_id",
+                "user_id": 1,
                 "items": [
                     {
-                        "product_id": "$product_id_a",
+                        "product_id": 1,
                         "quantity": 2
                     },
                     {
-                        "product_id": "$product_id_b",
+                        "product_id": 2,
                         "quantity": 1
                     }
                 ]
