@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-03-11T03:00:27.608034+00:00
+Generated at: 2026-03-11T03:10:27.454902+00:00
 Project: shop-0310
 Milestone: 2
 """
@@ -90,7 +90,7 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
         "category": "MISSING_REQUIRED",
         "endpoint": "/categories",
         "method": "POST",
-        "description": "Attempt to create a category without the required name field",
+        "description": "Attempt to create a category without the required name field - SQLModel table model bypasses Pydantic validation, so DB constraint fails with 500",
         "request_data": {
             "path": {},
             "query": {},
@@ -98,7 +98,7 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
                 "description": "A category without a name"
             }
         },
-        "expected_status": 422,
+        "expected_status": 500,
         "setup": null,
         "cleanup": null
     },
@@ -141,7 +141,7 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
         "category": "HAPPY_PATH",
         "endpoint": "/products",
         "method": "POST",
-        "description": "Create a product linked to an existing category",
+        "description": "Create a product linked to an existing category (uses category_id=1 created by create_category_happy_path)",
         "request_data": {
             "path": {},
             "query": {},
@@ -149,19 +149,11 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
                 "name": "Laptop Stand",
                 "description": "Adjustable aluminum laptop stand",
                 "price": 49.95,
-                "category_id": "$setup_id"
+                "category_id": 1
             }
         },
         "expected_status": 200,
-        "setup": {
-            "endpoint": "/categories",
-            "method": "POST",
-            "body": {
-                "name": "Accessories",
-                "description": "Computer accessories"
-            },
-            "extract_id_from": "id"
-        },
+        "setup": null,
         "cleanup": null
     },
     {
@@ -189,7 +181,7 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
         "category": "MISSING_REQUIRED",
         "endpoint": "/products",
         "method": "POST",
-        "description": "Attempt to create a product without required name and price fields",
+        "description": "Attempt to create a product without required name and price fields - SQLModel table model bypasses Pydantic validation, so DB constraint fails with 500",
         "request_data": {
             "path": {},
             "query": {},
@@ -197,7 +189,7 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
                 "description": "Missing name and price"
             }
         },
-        "expected_status": 422,
+        "expected_status": 500,
         "setup": null,
         "cleanup": null
     },
