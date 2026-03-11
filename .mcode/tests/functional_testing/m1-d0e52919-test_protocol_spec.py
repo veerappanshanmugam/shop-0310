@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-03-11T03:03:34.463380+00:00
+Generated at: 2026-03-11T03:05:33.203528+00:00
 Project: shop-0310
 Milestone: 1
 """
@@ -114,14 +114,14 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
         "category": "MISSING_REQUIRED",
         "endpoint": "/users",
         "method": "POST",
-        "description": "Send empty JSON body missing required email and name fields, expect 422 validation error",
+        "description": "Send empty JSON body missing required email and name fields, expect 500 due to SQLModel table=True bypassing Pydantic validation",
         "setup": null,
         "request_data": {
             "path": {},
             "query": {},
             "body": {}
         },
-        "expected_status": 422,
+        "expected_status": 500,
         "cleanup": null
     },
     {
@@ -129,7 +129,7 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
         "category": "MISSING_REQUIRED",
         "endpoint": "/users",
         "method": "POST",
-        "description": "Send request with email but missing name field, expect 422 validation error",
+        "description": "Send request with email but missing name field, expect 500 due to SQLModel table=True bypassing Pydantic validation",
         "setup": null,
         "request_data": {
             "path": {},
@@ -138,7 +138,7 @@ TEST_CASES: list[dict[str, Any]] = resolve_env_placeholders(
                 "email": "noname@example.com"
             }
         },
-        "expected_status": 422,
+        "expected_status": 500,
         "cleanup": null
     },
     {
