@@ -9,7 +9,7 @@ This script supports two modes:
 1. SRC Validation: Tests endpoints and captures responses (no expected_response)
 2. DST Contract Validation: Tests endpoints and validates responses match expected (has expected_response)
 
-Generated at: 2026-03-11T03:11:41.151548+00:00
+Generated at: 2026-03-11T03:13:03.335073+00:00
 Project: shop-0310
 Milestone: 2
 """
