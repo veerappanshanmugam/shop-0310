@@ -1,7 +1,6 @@
 """Reporting API endpoints."""
 
 from decimal import Decimal
-from typing import Optional
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
