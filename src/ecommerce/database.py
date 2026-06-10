@@ -1,7 +1,7 @@
 """Database connection and session management."""
 
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
