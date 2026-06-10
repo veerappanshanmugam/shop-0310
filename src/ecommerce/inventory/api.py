@@ -1,6 +1,6 @@
 """Inventory management API endpoints."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -48,7 +48,7 @@ async def update_inventory(
         raise HTTPException(status_code=404, detail="Inventory not found")
 
     inventory.quantity = update.quantity
-    inventory.last_updated = datetime.utcnow()
+    inventory.last_updated = datetime.now(UTC)
     session.add(inventory)
     await session.commit()
     await session.refresh(inventory)
@@ -74,7 +74,7 @@ async def reserve_inventory(
         )
 
     inventory.reserved += reserve.quantity
-    inventory.last_updated = datetime.utcnow()
+    inventory.last_updated = datetime.now(UTC)
     session.add(inventory)
     await session.commit()
     await session.refresh(inventory)

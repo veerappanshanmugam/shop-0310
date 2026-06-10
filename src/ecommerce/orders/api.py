@@ -1,6 +1,6 @@
 """Order management API endpoints."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -110,7 +110,7 @@ async def create_order(
         # Reserve inventory
         inventory = item_data["inventory"]
         inventory.reserved += item_data["quantity"]
-        inventory.last_updated = datetime.utcnow()
+        inventory.last_updated = datetime.now(UTC)
         session.add(inventory)
 
         items_response.append(
